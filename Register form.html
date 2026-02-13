@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Form</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        padding: 40px;
+        border-radius: 15px;
+        width: 350px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        color: #fff;
+    }
+
+    .container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .input-group {
+        margin-bottom: 18px;
+        position: relative;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        outline: none;
+        font-size: 14px;
+    }
+
+    .input-group small {
+        color: #ffb3b3;
+        font-size: 12px;
+        display: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #fff;
+        color: #764ba2;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #f1f1f1;
+        transform: translateY(-2px);
+    }
+
+    .success input {
+        border: 2px solid #00ff99;
+    }
+
+    .error input {
+        border: 2px solid #ff4d4d;
+    }
+
+    .error small {
+        display: block;
+    }
+
+    .password-strength {
+        height: 5px;
+        border-radius: 5px;
+        margin-top: 5px;
+        background: #ddd;
+    }
+
+    .strength-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Create Account</h2>
+    <form id="registerForm">
+        
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Username">
+            <small>Error message</small>
+        </div>
+
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Email">
+            <small>Error message</small>
+        </div>
+
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password">
+            <div class="password-strength">
+                <div class="strength-bar" id="strengthBar"></div>
+            </div>
+            <small>Error message</small>
+        </div>
+
+        <div class="input-group">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password">
+            <small>Error message</small>
+        </div>
+
+        <button type="submit">Register</button>
+    </form>
+</div>
+
+<script>
+const form = document.getElementById('registerForm');
+const username = document.getElementById('username');
+const email = document.getElementById('email');
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('confirmPassword');
+const strengthBar = document.getElementById('strengthBar');
+
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    validateInputs();
+});
+
+function validateInputs() {
+    const usernameValue = username.value.trim();
+    const emailValue = email.value.trim();
+    const passwordValue = password.value.trim();
+    const confirmPasswordValue = confirmPassword.value.trim();
+
+    if (usernameValue === '') {
+        setError(username, "Username cannot be blank");
+    } else {
+        setSuccess(username);
+    }
+
+    if (emailValue === '') {
+        setError(email, "Email cannot be blank");
+    } else if (!isValidEmail(emailValue)) {
+        setError(email, "Email is not valid");
+    } else {
+        setSuccess(email);
+    }
+
+    if (passwordValue === '') {
+        setError(password, "Password cannot be blank");
+    } else if (passwordValue.length < 6) {
+        setError(password, "Password must be at least 6 characters");
+    } else {
+        setSuccess(password);
+    }
+
+    if (confirmPasswordValue === '') {
+        setError(confirmPassword, "Please confirm your password");
+    } else if (confirmPasswordValue !== passwordValue) {
+        setError(confirmPassword, "Passwords do not match");
+    } else {
+        setSuccess(confirmPassword);
+    }
+}
+
+function setError(input, message) {
+    const inputGroup = input.parentElement;
+    const small = inputGroup.querySelector('small');
+    small.innerText = message;
+    inputGroup.className = 'input-group error';
+}
+
+function setSuccess(input) {
+    const inputGroup = input.parentElement;
+    inputGroup.className = 'input-group success';
+}
+
+function isValidEmail(email) {
+    return /^[^ ]+@[^ ]+\.[a-z]{2,3}$/.test(email);
+}
+
+// Password Strength Checker
+password.addEventListener('input', function() {
+    const value = password.value;
+    let strength = 0;
+
+    if (value.length > 5) strength += 25;
+    if (value.match(/[A-Z]/)) strength += 25;
+    if (value.match(/[0-9]/)) strength += 25;
+    if (value.match(/[^A-Za-z0-9]/)) strength += 25;
+
+    strengthBar.style.width = strength + "%";
+
+    if (strength <= 25) {
+        strengthBar.style.background = "red";
+    } else if (strength <= 50) {
+        strengthBar.style.background = "orange";
+    } else if (strength <= 75) {
+        strengthBar.style.background = "yellow";
+    } else {
+        strengthBar.style.background = "lime";
+    }
+});
+</script>
+
+</body>
+</html>
