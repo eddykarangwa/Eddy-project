@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Car Game</title>
+  <style>
+    body {
+      margin: 0;
+      background: #222;
+      overflow: hidden;
+      text-align: center;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      background: #555;
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🚗 Car Racing Game</h2>
+<p>Use Left and Right Arrow Keys</p>
+<p>Score: <span id="score">0</span></p>
+
+<canvas id="game" width="400" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let player = {
+  x: 180,
+  y: 500,
+  width: 40,
+  height: 70,
+  speed: 5
+};
+
+let enemies = [];
+let score = 0;
+let gameOver = false;
+
+document.addEventListener("keydown", movePlayer);
+
+function movePlayer(e) {
+  if (e.key === "ArrowLeft" && player.x > 0) {
+    player.x -= player.speed * 5;
+  }
+  if (e.key === "ArrowRight" && player.x < canvas.width - player.width) {
+    player.x += player.speed * 5;
+  }
+}
+
+function spawnEnemy() {
+  const x = Math.random() * (canvas.width - 40);
+  enemies.push({
+    x: x,
+    y: -70,
+    width: 40,
+    height: 70,
+    speed: 4
+  });
+}
+
+function drawCar(x, y, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, 40, 70);
+}
+
+function detectCollision(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+function update() {
+  if (gameOver) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw road lines
+  ctx.fillStyle = "white";
+  for (let i = 0; i < canvas.height; i += 40) {
+    ctx.fillRect(195, i, 10, 20);
+  }
+
+  // Draw player
+  drawCar(player.x, player.y, "lime");
+
+  // Enemies
+  enemies.forEach((enemy, index) => {
+    enemy.y += enemy.speed;
+    drawCar(enemy.x, enemy.y, "red");
+
+    if (detectCollision(player, enemy)) {
+      gameOver = true;
+      alert("Game Over! Score: " + score);
+      location.reload();
+    }
+
+    if (enemy.y > canvas.height) {
+      enemies.splice(index, 1);
+      score++;
+      document.getElementById("score").textContent = score;
+    }
+  });
+
+  requestAnimationFrame(update);
+}
+
+setInterval(spawnEnemy, 1200);
+update();
+</script>
+
+</body>
+</html>

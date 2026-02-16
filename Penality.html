@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Penalty Game</title>
+  <style>
+    body {
+      text-align: center;
+      background: #0b6623;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      background: #1e8f3e;
+      border: 3px solid white;
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>⚽ Penalty Kick Game</h1>
+<p>Choose where to shoot!</p>
+
+<button onclick="shoot('left')">Left</button>
+<button onclick="shoot('center')">Center</button>
+<button onclick="shoot('right')">Right</button>
+
+<h2 id="result"></h2>
+<p>Score: <span id="score">0</span></p>
+
+<canvas id="game" width="400" height="300"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+let score = 0;
+
+function drawField() {
+  ctx.fillStyle = "#1e8f3e";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Goal
+  ctx.fillStyle = "white";
+  ctx.fillRect(100, 20, 200, 10);
+  ctx.fillRect(100, 20, 10, 60);
+  ctx.fillRect(290, 20, 10, 60);
+
+  // Ball
+  ctx.beginPath();
+  ctx.arc(200, 250, 10, 0, Math.PI * 2);
+  ctx.fillStyle = "white";
+  ctx.fill();
+}
+
+function shoot(direction) {
+  const options = ["left", "center", "right"];
+  const keeper = options[Math.floor(Math.random() * 3)];
+
+  if (direction === keeper) {
+    document.getElementById("result").textContent = "🧤 Saved by the keeper!";
+  } else {
+    document.getElementById("result").textContent = "⚽ GOAL!!!";
+    score++;
+    document.getElementById("score").textContent = score;
+  }
+
+  animateShot(direction, keeper);
+}
+
+function animateShot(direction, keeper) {
+  let ballX = 200;
+  let ballY = 250;
+
+  const targetX = direction === "left" ? 130 :
+                  direction === "right" ? 270 : 200;
+
+  const interval = setInterval(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawField();
+
+    ballY -= 5;
+    ballX += (targetX - ballX) * 0.1;
+
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+    ctx.fillStyle = "white";
+    ctx.fill();
+
+    if (ballY < 60) {
+      clearInterval(interval);
+
+      // Draw keeper
+      ctx.fillStyle = "blue";
+      const keeperX = keeper === "left" ? 120 :
+                      keeper === "right" ? 260 : 190;
+      ctx.fillRect(keeperX, 40, 40, 40);
+    }
+  }, 20);
+}
+
+drawField();
+</script>
+
+</body>
+</html>
