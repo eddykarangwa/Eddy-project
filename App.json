@@ -1,0 +1,35 @@
+<template>
+  <div>
+    <h2>User Table</h2>
+    <table border="1" cellpadding="10">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="user in users" :key="user.id">
+          <td>{{ user.id }}</td>
+          <td>
+            <input v-model="user.name" />
+          </td>
+          <td>
+            <input v-model="user.email" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const users = ref([
+  { id: 1, name: 'Eddy', email: 'eddy@example.com' },
+  { id: 2, name: 'Alice', email: 'alice@example.com' },
+  { id: 3, name: 'Bob', email: 'bob@example.com' },
+])
+</script>
